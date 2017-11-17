@@ -38,3 +38,4 @@ RUN sed -i -e "s|bazel build -c opt nlp/parser/trainer:sempar.so|bazel build -c 
 
 RUN ./nlp/parser/tools/train.sh --commons=local/conll2003/commons --train=local/conll2003/eng.train.zip --dev=local/conll2003/eng.testa.zip --word_embeddings=local/embeddings/word2vec-32-embeddings.bin --report_every=5000 --train_steps=10000 --output=/tmp/sempar-conll
 
+RUN ./bazel-bin/nlp/parser/tools/parse --logtostderr --parser=/tmp/sempar-conll/sempar.flow  --text="John loves Mary" --indent=2
