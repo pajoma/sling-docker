@@ -29,13 +29,21 @@ RUN bazel build -c opt nlp/parser nlp/parser/tools:all
 
 ADD . $SLING_HOME
 
-RUN curl http://www.jbox.dk/sling/conll-2003-sempar.tar.gz -o /tmp/conll-2003-sempar.tar.gz
-RUN tar xvf /tmp/conll-2003-sempar.tar.gz
+RUN curl -O http://www.jbox.dk/sling/conll-2003-sempar.tar.gz 
+RUN tar xvf conll-2003-sempar.tar.gz
 RUN mkdir $SLING_HOME/sling/local/embeddings
-RUN curl http://www.jbox.dk/sling/word2vec-32-embeddings.bin -o $SLING_HOME/sling/local/embeddings/word2vec-32-embeddings.bin
+RUN curl -O http://www.jbox.dk/sling/word2vec-32-embeddings.bin 
+RUN mv word2vec-32-embeddings.bin  $SLING_HOME/sling/local/embeddings/
 
 RUN sed -i -e "s|bazel build -c opt nlp/parser/trainer:sempar.so|bazel build -c opt --cxxopt="-D_GLIBCXX_USE_CXX11_ABI=0" nlp/parser/trainer:sempar.so|" $SLING_HOME/sling/nlp/parser/tools/train.sh
 
-RUN ./nlp/parser/tools/train.sh --commons=local/conll2003/commons --train=local/conll2003/eng.train.zip --dev=local/conll2003/eng.testa.zip --word_embeddings=local/embeddings/word2vec-32-embeddings.bin --report_every=5000 --train_steps=10000 --output=/tmp/sempar-conll
+#RUN ./nlp/parser/tools/train.sh --commons=local/conll2003/commons --train=local/conll2003/eng.train.zip --dev=local/conll2003/eng.testa.zip --word_embeddings=local/embeddings/word2vec-32-embeddings.bin --report_every=5000 --train_steps=10000 --output=/tmp/sempar-conll
+RUN ./nlp/parser/tools/train.sh --commons=local/conll2003/commons --train=local/conll2003/eng.train.zip --dev=local/conll2003/eng.testa.zip --word_embeddings=local/embeddings/word2vec-32-embeddings.bin --report_every=5 --train_steps=10 --output=/tmp/sempar-conll
 
-RUN ./bazel-bin/nlp/parser/tools/parse --logtostderr --parser=/tmp/sempar-conll/sempar.flow  --text="John loves Mary" --indent=2
+#RUN ./bazel-bin/nlp/parser/tools/parse --logtostderr --parser=/tmp/sempar-conll/sempar.flow  --text="John loves Mary" --indent=2 || true
+
+ENTRYPOINT ["./bazel-bin/nlp/parser/tools/parse", "--logtostderr", "--parser=/tmp/sempar-conll/sempar.flow", "--text=\"John loves Mary\"", "--indent=2"]
+
+#ENTRYPOINT ["tensorboard", "--logdir=/tmp/sempar-conll/tensorboard"]
+#EXPOSE 6006
+
