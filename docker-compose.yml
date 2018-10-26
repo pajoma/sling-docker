@@ -1,0 +1,17 @@
+version: '2'
+services:
+  sling:
+    image: pajoma/sling
+    build:
+      context: .
+    container_name: sling
+    ports:
+      - 6767:6767
+    volumes:
+      - ./data:/usr/local/sling/data
+      - ./local:/usr/local/sling/local
+
+     
+    # command: sh -c '/usr/local/sling/run.sh'
+    command: sh -c '/bin/bash'
+    

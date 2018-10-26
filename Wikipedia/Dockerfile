@@ -30,11 +30,6 @@ RUN git checkout caspar
 RUN bazel build -c opt sling/nlp/parser sling/nlp/parser/tools:all
 
 RUN git checkout caspar
-RUN bazel build -c opt sling/nlp/kb:knowledge-server
 RUN bazel build -c opt sling/pyapi:pysling.so
 RUN ln -s $(realpath python) /usr/local/lib/python2.7/site-packages/sling
-
-
-
-
 
